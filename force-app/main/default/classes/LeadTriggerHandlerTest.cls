@@ -188,7 +188,6 @@ public with sharing class LeadTriggerHandlerTest {
         for (Contact c : testContacts){
             setContactEmail.add(c.Email);
         }
-
         insert testContacts;
         
         // Retrieve List<Lead>
@@ -202,8 +201,6 @@ public with sharing class LeadTriggerHandlerTest {
             testLeadsConverted.put(l.Id, foundEmail);
         }
 
-        System.debug('testLeads: ' + JSON.serializePretty(testLeads));
-
         List<Lead> insLeads = [SELECT Id, FirstName, LastName, Email, Status, IsConverted FROM Lead WHERE Id IN :testLeads];
         
         // Iterate over inserted Leads and check Converted Status against Map created above - Assert they should match for eavery Lead.
@@ -212,14 +209,19 @@ public with sharing class LeadTriggerHandlerTest {
         }
 
         // TEST UPDATED LEAD
+        // Update single Lead record Email to match second Contact record Email.  This should fire auto-Convert for UPDATED record.
         testLeads[1].Email = testContacts[1].Email;
-        System.debug('testLeads[1].Email: ' + testLeads[1].Email);
-        System.debug('testContacts[1].Email: ' + testContacts[1].Email);
         update testLeads;
 
         List<Lead> updLeads = [SELECT Id, FirstName, LastName, Email, Status, IsConverted FROM Lead WHERE Id IN :testLeads];
-        System.debug('updLeads: ' + JSON.serializePretty(updLeads));
-        Assert.areEqual(testLeads[1].IsConverted, true);
+        Assert.areEqual(updLeads[1].IsConverted, true);
+
+        // Update updLeads - no conversions should occur
+        update updLeads;
+        List<Lead> upd2Leads = [SELECT Id, FirstName, LastName, Email, Status, IsConverted FROM Lead WHERE Id IN :testLeads];
+        for (Lead l : upd2Leads) {
+            Assert.areEqual(upd2Leads.IsConverted, false);
+        }
 
     }
     

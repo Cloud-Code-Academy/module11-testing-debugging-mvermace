@@ -5,6 +5,8 @@
 // You can also execute the entire file by running the command:
 //     SFDX: Execute Anonymous Apex with Editor Contents
 
-string tempvar = 'Enter_your_name_here';
-System.debug('Hello World!');
-System.debug('My name is ' + tempvar);
+// List<TestData__c> td = [SELECT Id FROM TestData__c];
+// System.debug('td: ' + JSON.serializePretty(td));
+
+List<Lead> leads = TestData.createTestLeads();
+System.debug('leads: ' + JSON.serializePretty(leads));

@@ -59,8 +59,6 @@ public with sharing class LeadTriggerHandlerTest {
         
         List<Lead> afterIns = [SELECT Id, LastName, Title FROM Lead WHERE Id IN :testLeads];
 
-        //System.debug('afterIns: ' + JSON.serializePretty(afterIns));  
-
         List<Lead> missedLeads = new List<Lead>();
     
         for (Lead ld : afterIns) {
@@ -80,13 +78,9 @@ public with sharing class LeadTriggerHandlerTest {
             
         }
         
-        //System.debug('missedLeads: ' + JSON.serializePretty(missedLeads));
-        
         update missedLeads;      
 
         List<Lead> afterUpd = [SELECT Id, LastName, Title FROM Lead WHERE Id IN :missedLeads];
-
-        //System.debug('afterUpd: ' + JSON.serializePretty(afterUpd));
         
         for (Lead ld : afterUpd) {
             if (beforeIns.get(ld.LastName) == 'vip') {
@@ -122,14 +116,10 @@ public with sharing class LeadTriggerHandlerTest {
             tl.Lead_Score__c = leadScore;
         }
 
-        //System.debug('testLeads: ' + JSON.serializePretty(testLeads));
-
         insert testLeads;
         
         List<Lead> insLeads = [SELECT Id, LeadSource, Email, Phone, Industry, Lead_Score__c FROM Lead WHERE ID IN :testLeads];
         
-        //System.debug('insLeads: ' + JSON.serializePretty(insLeads));
-
         for (Lead tl : insLeads) {
             Integer leadScore = 10;
             if (tl.LeadSource == 'Website' && tl.Email != null) {
@@ -141,8 +131,6 @@ public with sharing class LeadTriggerHandlerTest {
             if (tl.Industry == 'Technology') {
                 leadScore = leadScore + 10;
             }
-            //System.debug('leadScore:' + String.valueOf(leadScore));
-            //System.debug('tl.Lead_Score__c: ' + String.valueOf(tl.Lead_Score__c));
             Assert.areEqual(leadScore, tl.Lead_Score__c, 'The calculated leadScore does not match the Lead_Score__c field value.');
         }
 
@@ -151,8 +139,6 @@ public with sharing class LeadTriggerHandlerTest {
             tl.Phone = null;
             tl.Industry = null;
         }
-        
-        //System.debug('UPDATED insLeads: ' + JSON.serializePretty(insLeads));
         
         update insLeads;
 
@@ -169,8 +155,6 @@ public with sharing class LeadTriggerHandlerTest {
             if (tl.Industry == 'Technology') {
                 leadScore = leadScore + 10;
             }
-            //System.debug('leadScore:' + String.valueOf(leadScore));
-            //System.debug('tl.Lead_Score__c: ' + String.valueOf(tl.Lead_Score__c));
             Assert.areEqual(10, tl.Lead_Score__c, 'The Lead_Score__c should be 10.');
         }
 
@@ -215,15 +199,6 @@ public with sharing class LeadTriggerHandlerTest {
 
         List<Lead> updLeads = [SELECT Id, FirstName, LastName, Email, Status, IsConverted FROM Lead WHERE Id IN :testLeads];
         Assert.areEqual(updLeads[1].IsConverted, true);
-
-        // Update updLeads - no conversions should occur
-        
-        update updLeads;
-        List<Lead> upd2Leads = [SELECT Id, FirstName, LastName, Email, Status, IsConverted FROM Lead WHERE Id IN :testLeads];
-        System.debug(JSON.serializePretty(upd2Leads));
-        // for (Lead l : upd2Leads) {
-        //     Assert.areEqual(upd2Leads.IsConverted, false);
-        // }
 
     }
     

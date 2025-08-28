@@ -65,19 +65,22 @@ public with sharing class LeadTriggerHandler {
 
 			// Check and add points based on the specified conditions
 			if (ld.LeadSource == 'Website' && ld.Email != null) {
-				score = 3;
+				score = score + 3;
 			}
 
 			if (ld.Phone != null) {
-				score = 5;
+				score = score + 5;
 			}
 
 			if (ld.Industry == 'Technology') {
-				score = 10;
+				score = score + 10;
 			}
 
 			ld.Lead_Score__c = score; // Set the computed score back to the lead
 		}
+
+		//System.debug('leadsToScore: ' + JSON.serializePretty(leadsToScore));
+
 	}
 
 	/* 
@@ -104,11 +107,15 @@ public with sharing class LeadTriggerHandler {
 	 * - One of the errors is map related. Make sure you are using the correct contact map key
 	 */
 	public static void handleLeadAutoConvert(List<Lead> leads) {
+		
 		// Step 1: Gather all lead emails
         Map<Id,String> leadToEmailMap = new Map<Id,String>();
 		for (Lead lead : leads) {
-			leadToEmailMap.put(lead.Id, lead.Email);
+			if (!lead.IsConverted) {												// Preclude issues with converted Leads
+				leadToEmailMap.put(lead.Id, lead.Email);
+			}
 		}
+		if (leadToEmailMap.size() = 0) {return;}									// Nothing to see here.  Go home.
 
 		// Step 2: Find matching contacts based on email
 		Map<String, Contact> emailToContactMap = new Map<String, Contact>();
@@ -141,5 +148,6 @@ public with sharing class LeadTriggerHandler {
 		if (!leadConverts.isEmpty()) {
 			List<Database.LeadConvertResult> lcrs = Database.convertLead(leadConverts);
 		}
+
 	}
 }

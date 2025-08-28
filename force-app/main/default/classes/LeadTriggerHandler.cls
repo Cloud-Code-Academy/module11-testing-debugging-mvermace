@@ -115,7 +115,7 @@ public with sharing class LeadTriggerHandler {
 				leadToEmailMap.put(lead.Id, lead.Email);
 			}
 		}
-		if (leadToEmailMap.size() = 0) {return;}									// Nothing to see here.  Go home.
+		if (leadToEmailMap.size() == 0) {return;}									// Nothing to see here.  Go home.
 
 		// Step 2: Find matching contacts based on email
 		Map<String, Contact> emailToContactMap = new Map<String, Contact>();
